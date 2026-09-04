@@ -1,0 +1,264 @@
+{
+  "schema": "humanoiduptime-public-csv-package",
+  "schemaVersion": 1,
+  "exportVersion": "1.2.0",
+  "snapshotDate": "2026-09-04",
+  "encoding": "UTF-8 with BOM",
+  "dialect": "RFC 4180-compatible comma-separated values with CRLF line endings; every field is quoted.",
+  "spreadsheetSafety": "Cells beginning with =, +, - or @ are prefixed with an apostrophe to prevent formula execution in spreadsheet applications.",
+  "joinConvention": "Array values in flat cells are separated by space-pipe-space. Stable IDs should be used for joins between tables.",
+  "licence": {
+    "database": {
+      "name": "Open Data Commons Attribution License 1.0",
+      "identifier": "ODC-By-1.0",
+      "url": "https://opendatacommons.org/licenses/by/1-0/"
+    },
+    "annotations": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "identifier": "CC-BY-4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "attribution": "HumanoidUptime — https://humanoiduptime.com/",
+    "exclusions": "Third-party source materials, names, logos and trademarks are not relicensed. Links and quotations remain subject to their respective rights.",
+    "warranty": "Provided as-is for research and verification; not a substitute for procurement, safety, investment or legal due diligence."
+  },
+  "tables": [
+    {
+      "key": "records",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-records.csv",
+      "latestFile": "latest-records.csv",
+      "description": "One row per published Reliability Record.",
+      "rowCount": 13,
+      "primaryKey": [
+        "record_id"
+      ],
+      "columns": [
+        "record_id",
+        "record_number",
+        "record_version",
+        "slug",
+        "model",
+        "partner",
+        "record_type",
+        "deployment_status",
+        "context",
+        "location",
+        "activity_evidence_level",
+        "activity_evidence_label",
+        "reliability_evidence_level",
+        "reliability_evidence_label",
+        "summary",
+        "finding",
+        "reviewed_at",
+        "first_published_at",
+        "last_modified_at",
+        "record_url"
+      ],
+      "sha256": "59f3bc94b4309c1b8ed802e200e348a8a09a8c2601758390048fdedfba34ce65"
+    },
+    {
+      "key": "claims",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-claims.csv",
+      "latestFile": "latest-claims.csv",
+      "description": "One row per atomic source-linked public claim.",
+      "rowCount": 84,
+      "primaryKey": [
+        "claim_id"
+      ],
+      "columns": [
+        "claim_id",
+        "record_id",
+        "record_slug",
+        "label",
+        "value",
+        "evidence_level",
+        "assessment",
+        "source_ids",
+        "source_metric_term",
+        "source_metric_value",
+        "source_metric_unit",
+        "target_metric",
+        "normalization_qualification",
+        "normalized_result",
+        "metric_interpretation"
+      ],
+      "sha256": "1e51c2657613295781fe830a080aba3e8c67ec86ae200ffee9748ef04e4d9f4f"
+    },
+    {
+      "key": "disclosures",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-disclosures.csv",
+      "latestFile": "latest-disclosures.csv",
+      "description": "One row per record and reliability disclosure question.",
+      "rowCount": 117,
+      "primaryKey": [
+        "record_id",
+        "metric_key"
+      ],
+      "columns": [
+        "record_id",
+        "record_slug",
+        "metric_key",
+        "metric_label",
+        "value_label",
+        "evidence_level",
+        "disclosure_state",
+        "applicability_reason"
+      ],
+      "sha256": "a2431f70d84dc57c2a88cb06fb1290baea10cdd8a1a77ed1df74bc35661e6f7c"
+    },
+    {
+      "key": "sources",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-sources.csv",
+      "latestFile": "latest-sources.csv",
+      "description": "One row per source used by a published Reliability Record.",
+      "rowCount": 44,
+      "primaryKey": [
+        "record_id",
+        "source_id"
+      ],
+      "columns": [
+        "record_id",
+        "record_slug",
+        "source_id",
+        "title",
+        "publisher",
+        "source_type",
+        "published_at",
+        "accessed_at",
+        "url",
+        "relevant_location",
+        "archive_reference",
+        "archive_access",
+        "captured_at",
+        "captured_media_type",
+        "captured_byte_length",
+        "content_fingerprint",
+        "content_fingerprint_algorithm",
+        "source_metadata_fingerprint"
+      ],
+      "sha256": "cbff4246252acac7b6fc3e004fccd4f84ced0f5b96de0f4e47b6d1db15203f24"
+    },
+    {
+      "key": "history",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-history.csv",
+      "latestFile": "latest-history.csv",
+      "description": "One row per public historical evidence state; disclosure fields are provided as metric-prefixed columns.",
+      "rowCount": 13,
+      "primaryKey": [
+        "state_id"
+      ],
+      "columns": [
+        "state_id",
+        "record_id",
+        "record_slug",
+        "knowledge_as_of",
+        "reviewed_at",
+        "state_kind",
+        "supersedes_state_id",
+        "superseded_by_state_id",
+        "title",
+        "summary",
+        "basis",
+        "facts",
+        "limitations",
+        "source_ids",
+        "runtime_hours_label",
+        "runtime_hours_evidence_level",
+        "runtime_hours_disclosure_state",
+        "availability_label",
+        "availability_evidence_level",
+        "availability_disclosure_state",
+        "interventions_label",
+        "interventions_evidence_level",
+        "interventions_disclosure_state",
+        "mtbf_label",
+        "mtbf_evidence_level",
+        "mtbf_disclosure_state",
+        "mttr_label",
+        "mttr_evidence_level",
+        "mttr_disclosure_state",
+        "task_output_label",
+        "task_output_evidence_level",
+        "task_output_disclosure_state",
+        "energy_operation_label",
+        "energy_operation_evidence_level",
+        "energy_operation_disclosure_state",
+        "autonomy_mode_label",
+        "autonomy_mode_evidence_level",
+        "autonomy_mode_disclosure_state",
+        "fleet_size_label",
+        "fleet_size_evidence_level",
+        "fleet_size_disclosure_state"
+      ],
+      "sha256": "258219e3ed2155432ef441528d93488799972bcd3d58fc84afdd22c93b7f3c9b"
+    },
+    {
+      "key": "deployments",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-deployments.csv",
+      "latestFile": "latest-deployments.csv",
+      "description": "One row per public deployment, pilot, plan or research signal.",
+      "rowCount": 30,
+      "primaryKey": [
+        "deployment_id"
+      ],
+      "columns": [
+        "deployment_id",
+        "record_slug",
+        "manufacturer",
+        "model",
+        "operator",
+        "location",
+        "task",
+        "stage",
+        "stage_label",
+        "first_evidence_at",
+        "evidence_level",
+        "evidence_label",
+        "summary",
+        "reliability_disclosure",
+        "source_title",
+        "source_publisher",
+        "source_published_at",
+        "source_accessed_at",
+        "source_url",
+        "source_metadata_fingerprint"
+      ],
+      "sha256": "11e698cd4406cbff4fc40eb483b4a79820a8867ec9d53f50270ce9c3d93e653a"
+    },
+    {
+      "key": "coverage",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-coverage.csv",
+      "latestFile": "latest-coverage.csv",
+      "description": "One row per program in the declared 30-program research universe.",
+      "rowCount": 30,
+      "primaryKey": [
+        "coverage_id"
+      ],
+      "columns": [
+        "coverage_id",
+        "manufacturer",
+        "model",
+        "operator",
+        "outcome",
+        "record_slug",
+        "deployment_signal_ids"
+      ],
+      "sha256": "724da8b911c40420ab39b66c16f654a65d344d7dbb4b34bc1e39e93d283b5610"
+    },
+    {
+      "key": "metrics",
+      "file": "humanoiduptime-public-data-v1.2.0-2026-09-04-metrics.csv",
+      "latestFile": "latest-metrics.csv",
+      "description": "Stable keys and labels for the nine reliability disclosure questions.",
+      "rowCount": 9,
+      "primaryKey": [
+        "metric_key"
+      ],
+      "columns": [
+        "metric_key",
+        "metric_label"
+      ],
+      "sha256": "72144024e667abae6ece610917fb352347ae8399db4bca95ef1d714851889ac7"
+    }
+  ]
+}

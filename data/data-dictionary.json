@@ -1,0 +1,37 @@
+{
+  "schema": "humanoiduptime-public-data",
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-04",
+  "fields": {
+    "exportVersion": "Semantic version of the public export package.",
+    "snapshotDate": "UTC editorial snapshot date represented by the file.",
+    "generatedAt": "Stable UTC release timestamp for this dated snapshot; not an evidence date.",
+    "licence": "Reuse terms for the database and original editorial annotations. Third-party source materials are excluded.",
+    "metrics": "Stable definitions of the nine reliability disclosure questions.",
+    "records": "Public source-linked Reliability Records. Private candidate and sparse internal evidence-model objects are excluded.",
+    "records[].claims": "Atomic public statements with stable IDs, evidence levels and source links.",
+    "records[].disclosures": "Known, unknown or reasoned not-applicable state for each reliability question.",
+    "records[].analysisScope": "System, configuration and mission boundary used to interpret record claims.",
+    "records[].sources": "Public source metadata and retrieval-integrity fields.",
+    "records[].sources[].sourceMetadataFingerprint": "SHA-256 of canonical metadata exported for this source; not a fingerprint of third-party page content.",
+    "records[].sources[].relevantLocation": "Exact page, section, table or passage locator when retained; null means none is currently published.",
+    "records[].sources[].archiveReference": "Stable HumanoidUptime artifact ID for a retained verification copy, or an external archive reference where stated; null means no preserved artifact is currently registered.",
+    "records[].sources[].archiveAccess": "Access boundary for the retained artifact. Internal evidence copies are not included in the public export.",
+    "records[].sources[].capturedAt": "UTC timestamp of the preserved HTTP response body, when available.",
+    "records[].sources[].capturedMediaType": "HTTP media type recorded when the preserved response body was captured.",
+    "records[].sources[].capturedByteLength": "Exact byte length of the retained decoded response body.",
+    "records[].sources[].contentFingerprint": "Fingerprint of retained third-party source content when lawful and technically reliable; null does not imply the source was not reviewed.",
+    "sourcePreservation": "Public scope and rights boundary of the preservation pilot. Artifact bodies, response headers and internal paths are excluded.",
+    "recordHistory": "Effective public-knowledge states with evidence date separate from reconstruction date.",
+    "deployments": "Public deployment, pilot, plan and benchmark signals; a listing is not a full Reliability Record.",
+    "coverage": "Declared 30-program research universe, search boundary and public outcome at the cutoff.",
+    "externalReviews": "Attributed scoped spot checks. An empty array means none has been published."
+  },
+  "excluded": [
+    "private candidate observations and gate notes",
+    "internal priorities and research queue",
+    "raw evidence submissions and contact data",
+    "server logs and database internals",
+    "sparse Operational Evidence and Measurement Provenance working objects pending a separate public presentation decision"
+  ]
+}

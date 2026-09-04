@@ -1,0 +1,7 @@
+*.csv -text
+*.json text eol=lf
+*.md text eol=lf
+*.mjs text eol=lf
+*.sha256 text eol=lf
+*.yml text eol=lf
+CITATION.cff text eol=lf

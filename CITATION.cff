@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this dataset, please cite the versioned HumanoidUptime public data release."
+title: "HumanoidUptime Public Data"
+type: dataset
+authors:
+  - name: "HumanoidUptime"
+version: 1.2.0
+date-released: 2026-09-04
+url: "https://humanoiduptime.com/coverage/"
+repository-artifact: "https://github.com/humanoiduptime/data"
+license: ODC-By-1.0
+keywords:
+  - humanoid robotics
+  - reliability
+  - uptime
+  - evidence
+  - deployments
