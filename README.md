@@ -51,6 +51,10 @@ and their release manifest are canonical; GitHub Release attachments are only
 checksum-equivalent download mirrors. Release-specific notes are retained under
 [`releases/`](releases/).
 
+The `Publish public data release` workflow validates the tagged state before it
+creates a GitHub Release with the JSON, CSV ZIP, release manifest and release
+checksums. It refuses to replace an existing Release object.
+
 ## Corrections and contributions
 
 Open an issue with the affected record or stable ID, a public source URL and a
