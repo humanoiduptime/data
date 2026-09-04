@@ -4,10 +4,10 @@ title: "HumanoidUptime Public Data"
 type: dataset
 authors:
   - name: "HumanoidUptime"
-version: "1.3.0"
+version: "1.4.0"
 date-released: 2026-09-04
 url: "https://humanoiduptime.com/coverage/"
-repository-artifact: "https://github.com/humanoiduptime/data/tree/v1.3.0"
+repository-artifact: "https://github.com/humanoiduptime/data/tree/v1.4.0"
 license: ODC-By-1.0
 keywords:
   - humanoid robotics

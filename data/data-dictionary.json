@@ -22,6 +22,7 @@
     "records[].sources[].capturedMediaType": "HTTP media type recorded when the preserved response body was captured.",
     "records[].sources[].capturedByteLength": "Exact byte length of the retained decoded response body.",
     "records[].sources[].contentFingerprint": "Fingerprint of retained third-party source content when lawful and technically reliable; null does not imply the source was not reviewed.",
+    "recordIdentities": "Persistent Record ID lifecycle registry. Active IDs resolve to current records; non-active IDs retain a public tombstone and may name a successor without asserting identity equivalence.",
     "sourcePreservation": "Public scope and rights boundary of the preservation pilot. Artifact bodies, response headers and internal paths are excluded.",
     "recordHistory": "Effective public-knowledge states with evidence date separate from reconstruction date.",
     "deployments": "Public deployment, pilot, plan and benchmark signals; a listing is not a full Reliability Record.",

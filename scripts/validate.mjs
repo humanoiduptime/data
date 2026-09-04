@@ -14,7 +14,7 @@ const forbiddenKeys = new Set([
   'reviewSchedule',
   'submissions',
 ]);
-const tables = '(records|claims|disclosures|sources|history|deployments|coverage|metrics)';
+const tables = '(record_identities|records|claims|disclosures|sources|history|deployments|coverage|metrics)';
 const allowedFiles = [
   /^data-dictionary\.json$/,
   /^latest\.json$/,
@@ -106,6 +106,31 @@ if (latest.schema !== 'humanoiduptime-public-data' || latest.schemaVersion !== 1
 }
 assertPublicObject(latest);
 
+const recordsById = new Map(latest.records.map((record) => [record.recordId, record]));
+const identitiesById = new Map();
+for (const identity of latest.recordIdentities?.identities || []) {
+  if (!/^HU-R\d{3,}$/.test(identity.recordId || '') || identitiesById.has(identity.recordId) || !['active', 'withdrawn', 'merged', 'superseded'].includes(identity.status)) throw new Error(`Invalid persistent Record ID: ${identity.recordId ?? 'unknown'}`);
+  if (identity.status === 'active') {
+    const record = recordsById.get(identity.recordId);
+    if (!record || identity.currentSlug !== record.slug || identity.successorRecordId !== null || identity.reason !== null) throw new Error(`Active identity does not match its current Record: ${identity.recordId}`);
+  } else if (identity.currentSlug !== null || !identity.reason || (identity.status === 'withdrawn') !== (identity.successorRecordId === null)) {
+    throw new Error(`Invalid non-active identity lifecycle: ${identity.recordId}`);
+  }
+  identitiesById.set(identity.recordId, identity);
+}
+for (const recordId of recordsById.keys()) if (!identitiesById.has(recordId)) throw new Error(`Current Record has no persistent identity: ${recordId}`);
+for (const identity of identitiesById.values()) {
+  if (identity.successorRecordId && (!identitiesById.has(identity.successorRecordId) || identity.successorRecordId === identity.recordId)) throw new Error(`Invalid identity successor: ${identity.recordId}`);
+  const visited = new Set([identity.recordId]);
+  let cursor = identity;
+  while (cursor.successorRecordId) {
+    if (visited.has(cursor.successorRecordId)) throw new Error(`Identity successor cycle includes ${cursor.successorRecordId}.`);
+    visited.add(cursor.successorRecordId);
+    cursor = identitiesById.get(cursor.successorRecordId);
+  }
+  if (cursor.status !== 'active') throw new Error(`Identity successor chain does not end at an active Record: ${identity.recordId}`);
+}
+
 const immutableJson = `humanoiduptime-public-data-v${latest.exportVersion}-${latest.snapshotDate}.json`;
 if (!await sameBytes(path.join(dataRoot, 'latest.json'), path.join(dataRoot, immutableJson))) {
   throw new Error('latest.json differs from its immutable versioned artifact.');
@@ -118,7 +143,7 @@ if (jsonChecksum[1] !== immutableJson || jsonChecksum[0] !== sha256(latestBuffer
 
 const manifestBuffer = await readFile(path.join(dataRoot, 'latest-csv-manifest.json'));
 const manifest = JSON.parse(manifestBuffer);
-if (manifest.schema !== 'humanoiduptime-public-csv-package' || manifest.exportVersion !== latest.exportVersion || manifest.snapshotDate !== latest.snapshotDate || manifest.tables?.length !== 8) {
+if (manifest.schema !== 'humanoiduptime-public-csv-package' || manifest.exportVersion !== latest.exportVersion || manifest.snapshotDate !== latest.snapshotDate || manifest.tables?.length !== 9) {
   throw new Error('The current CSV manifest does not match the JSON release.');
 }
 

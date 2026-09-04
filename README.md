@@ -11,6 +11,8 @@ references. It is not a dump of the editorial database.
 
 - `data/latest.json` — current complete structured export;
 - `data/latest-*.csv` — current linked tables for spreadsheets and analysis;
+- `data/latest-record_identities.csv` — current lifecycle and resolution state
+  for every permanently reserved Record ID;
 - `data/latest-csv-manifest.json` — columns, keys, row counts and checksums;
 - `data/latest-release-manifest.json` — current formal release identity and
   distributions;
@@ -19,7 +21,8 @@ references. It is not a dump of the editorial database.
 - `data/humanoiduptime-public-data-v*` — immutable dated artifacts.
 
 Formal releases expose one versioned JSON distribution and one deterministic
-CSV ZIP. The ZIP contains all eight CSV tables, their CSV manifest and the data
+CSV ZIP. The ZIP contains all nine CSV tables, including the persistent Record
+ID lifecycle registry, their CSV manifest and the data
 dictionary. The release manifest binds both distributions to one release; the
 release checksum file also covers the immutable manifest itself.
 
