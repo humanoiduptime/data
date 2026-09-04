@@ -19,11 +19,15 @@ const allowedFiles = [
   /^data-dictionary\.json$/,
   /^latest\.json$/,
   /^latest-csv-manifest\.json$/,
+  /^latest-release-manifest\.json$/,
   new RegExp(`^latest-${tables}\\.csv$`),
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}\.json(?:\.sha256)?$/,
   new RegExp(`^humanoiduptime-public-data-v\\d+\\.\\d+\\.\\d+-\\d{4}-\\d{2}-\\d{2}-${tables}\\.csv$`),
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-csv-manifest\.json$/,
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-csv-checksums\.sha256$/,
+  /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-csv\.zip$/,
+  /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-release-manifest\.json$/,
+  /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-release-checksums\.sha256$/,
 ];
 
 function sha256(buffer) {
@@ -126,4 +130,48 @@ if (dictionary.schema !== latest.schema || dictionary.schemaVersion !== latest.s
   throw new Error('Data dictionary does not match the current release.');
 }
 
-console.log(`Validated HumanoidUptime public data ${latest.exportVersion} (${latest.snapshotDate}): ${latest.records.length} records and ${manifest.tables.reduce((sum, table) => sum + table.rowCount, 0)} CSV rows.`);
+const releaseBase = `humanoiduptime-public-data-v${latest.exportVersion}-${latest.snapshotDate}`;
+const releaseManifestFile = `${releaseBase}-release-manifest.json`;
+const releaseManifestBuffer = await readFile(path.join(dataRoot, releaseManifestFile));
+const releaseManifest = JSON.parse(releaseManifestBuffer);
+if (releaseManifest.schema !== 'humanoiduptime-public-release-manifest' || releaseManifest.schemaVersion !== 1 || releaseManifest.exportVersion !== latest.exportVersion || releaseManifest.snapshotDate !== latest.snapshotDate || releaseManifest.releaseTag !== `v${latest.exportVersion}`) {
+  throw new Error('Release manifest does not match the current dataset release identity.');
+}
+if (!await sameBytes(path.join(dataRoot, 'latest-release-manifest.json'), path.join(dataRoot, releaseManifestFile))) {
+  throw new Error('latest-release-manifest.json differs from its immutable artifact.');
+}
+
+const distributionKeys = releaseManifest.distributions?.map((distribution) => distribution.key).sort();
+if (distributionKeys?.join(',') !== 'csv_bundle,json') throw new Error('Release manifest must declare JSON and CSV bundle distributions.');
+for (const distribution of releaseManifest.distributions) {
+  const buffer = await readFile(path.join(dataRoot, distribution.file));
+  if (buffer.length !== distribution.byteLength || sha256(buffer) !== distribution.sha256) throw new Error(`Release distribution mismatch: ${distribution.file}`);
+}
+const csvBundle = releaseManifest.distributions.find((distribution) => distribution.key === 'csv_bundle');
+const expectedBundleEntries = [...manifest.tables.map((table) => table.file), immutableManifest, 'data-dictionary.json'].sort();
+if (csvBundle.entries?.slice().sort().join('\n') !== expectedBundleEntries.join('\n')) throw new Error('CSV bundle entry declaration does not match the current CSV package.');
+
+const releaseChecksumsFile = `${releaseBase}-release-checksums.sha256`;
+if (releaseManifest.checksumFile !== releaseChecksumsFile) throw new Error('Release manifest checksum filename mismatch.');
+const declaredReleaseChecksums = (await readFile(path.join(dataRoot, releaseChecksumsFile), 'utf8')).trim().split('\n').map((line) => line.trim().split(/\s+/));
+const expectedReleaseFiles = new Set([...releaseManifest.distributions.map((distribution) => distribution.file), releaseManifestFile]);
+if (declaredReleaseChecksums.length !== expectedReleaseFiles.size) throw new Error('Release checksum sidecar has the wrong artifact count.');
+for (const [checksum, file] of declaredReleaseChecksums) {
+  if (!expectedReleaseFiles.delete(file) || checksum !== sha256(await readFile(path.join(dataRoot, file)))) throw new Error(`Release checksum sidecar mismatch: ${file}`);
+}
+if (expectedReleaseFiles.size > 0) throw new Error(`Release checksum sidecar is missing: ${[...expectedReleaseFiles].join(', ')}`);
+
+if (process.env.GITHUB_REF_TYPE === 'tag' && process.env.GITHUB_REF_NAME !== releaseManifest.releaseTag) {
+  throw new Error(`Tag ${process.env.GITHUB_REF_NAME} does not match release identity ${releaseManifest.releaseTag}.`);
+}
+
+const citation = await readFile(path.join(repositoryRoot, 'CITATION.cff'), 'utf8');
+if (!citation.includes(`version: ${latest.exportVersion}`) || !citation.includes(`/tree/v${latest.exportVersion}`)) {
+  throw new Error('CITATION.cff does not identify the current immutable release.');
+}
+const releaseNotes = await readFile(path.join(repositoryRoot, 'releases', `v${latest.exportVersion}.md`), 'utf8');
+if (!releaseNotes.includes(`Public Data v${latest.exportVersion}`) || !releaseNotes.includes(`Snapshot: ${latest.snapshotDate}`)) {
+  throw new Error('Release notes do not match the current dataset release.');
+}
+
+console.log(`Validated HumanoidUptime public data ${latest.exportVersion} (${latest.snapshotDate}): ${latest.records.length} records, ${manifest.tables.reduce((sum, table) => sum + table.rowCount, 0)} CSV rows and ${releaseManifest.distributions.length} checksummed distributions.`);

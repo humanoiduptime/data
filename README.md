@@ -12,8 +12,15 @@ references. It is not a dump of the editorial database.
 - `data/latest.json` — current complete structured export;
 - `data/latest-*.csv` — current linked tables for spreadsheets and analysis;
 - `data/latest-csv-manifest.json` — columns, keys, row counts and checksums;
+- `data/latest-release-manifest.json` — current formal release identity and
+  distributions;
 - `data/data-dictionary.json` — field meanings and explicit exclusions;
 - `data/humanoiduptime-public-data-v*` — immutable dated artifacts.
+
+Formal releases expose one versioned JSON distribution and one deterministic
+CSV ZIP. The ZIP contains all eight CSV tables, their CSV manifest and the data
+dictionary. The release manifest binds both distributions to one release; the
+release checksum file also covers the immutable manifest itself.
 
 Stable IDs, rather than display labels, should be used for joins. CSV files are
 UTF-8 with BOM, use quoted fields and neutralize spreadsheet-formula prefixes.
@@ -34,7 +41,15 @@ node scripts/validate.mjs
 ```
 
 The validator checks the public/private boundary, immutable/current artifact
-equivalence, declared row counts and SHA-256 checksums.
+equivalence, declared row counts, distribution manifests, SHA-256 checksums and
+the release identity when run from a tag.
+
+## Releases
+
+Each formal release has one immutable `vX.Y.Z` tag. Files in the tagged commit
+and their release manifest are canonical; GitHub Release attachments are only
+checksum-equivalent download mirrors. Release-specific notes are retained under
+[`releases/`](releases/).
 
 ## Corrections and contributions
 

@@ -1,0 +1,41 @@
+{
+  "schema": "humanoiduptime-public-release-manifest",
+  "schemaVersion": 1,
+  "exportVersion": "1.2.1",
+  "datasetSchema": "humanoiduptime-public-data",
+  "datasetSchemaVersion": 1,
+  "snapshotDate": "2026-09-04",
+  "generatedAt": "2026-09-04T00:00:00.000Z",
+  "releaseTag": "v1.2.1",
+  "repositoryUrl": "https://github.com/humanoiduptime/data",
+  "canonicalUrl": "https://humanoiduptime.com/downloads/humanoiduptime-public-data-v1.2.1-2026-09-04-release-manifest.json",
+  "checksumFile": "humanoiduptime-public-data-v1.2.1-2026-09-04-release-checksums.sha256",
+  "distributions": [
+    {
+      "key": "json",
+      "file": "humanoiduptime-public-data-v1.2.1-2026-09-04.json",
+      "mediaType": "application/json",
+      "byteLength": 336924,
+      "sha256": "e55fd1f6769a73e34026c0e24fbc9d804b6358ad0b1243b18e2ffecd4db1a514"
+    },
+    {
+      "key": "csv_bundle",
+      "file": "humanoiduptime-public-data-v1.2.1-2026-09-04-csv.zip",
+      "mediaType": "application/zip",
+      "byteLength": 45431,
+      "sha256": "1259984f7a2158d11a05772d4233019f5acfb22e96519cf16fb9b35f5c2bade2",
+      "entries": [
+        "data-dictionary.json",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-claims.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-coverage.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-csv-manifest.json",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-deployments.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-disclosures.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-history.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-metrics.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-records.csv",
+        "humanoiduptime-public-data-v1.2.1-2026-09-04-sources.csv"
+      ]
+    }
+  ]
+}
