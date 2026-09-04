@@ -20,6 +20,7 @@ const allowedFiles = [
   /^latest\.json$/,
   /^latest-csv-manifest\.json$/,
   /^latest-release-manifest\.json$/,
+  /^latest-citation\.json$/,
   new RegExp(`^latest-${tables}\\.csv$`),
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}\.json(?:\.sha256)?$/,
   new RegExp(`^humanoiduptime-public-data-v\\d+\\.\\d+\\.\\d+-\\d{4}-\\d{2}-\\d{2}-${tables}\\.csv$`),
@@ -28,10 +29,29 @@ const allowedFiles = [
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-csv\.zip$/,
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-release-manifest\.json$/,
   /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-release-checksums\.sha256$/,
+  /^humanoiduptime-public-data-v\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}-citation\.json$/,
 ];
 
 function sha256(buffer) {
   return createHash('sha256').update(buffer).digest('hex');
+}
+
+function datasetPlainCitation(identity) {
+  return `${identity.author.name} (${identity.releaseDate.slice(0, 4)}). ${identity.title} v${identity.version}, snapshot ${identity.snapshotDate} [Data set]. ${identity.repositoryUrl}`;
+}
+
+function datasetCslJson(identity) {
+  return {
+    id: identity.id,
+    type: 'dataset',
+    title: identity.title,
+    author: [{ literal: identity.author.name }],
+    publisher: identity.author.name,
+    issued: { 'date-parts': [[...identity.releaseDate.split('-').map(Number)]] },
+    version: identity.version,
+    URL: identity.repositoryUrl,
+    note: `Editorial snapshot ${identity.snapshotDate}.`,
+  };
 }
 
 function assertPublicObject(value, location = '$') {
@@ -137,6 +157,10 @@ const releaseManifest = JSON.parse(releaseManifestBuffer);
 if (releaseManifest.schema !== 'humanoiduptime-public-release-manifest' || releaseManifest.schemaVersion !== 1 || releaseManifest.exportVersion !== latest.exportVersion || releaseManifest.snapshotDate !== latest.snapshotDate || releaseManifest.releaseTag !== `v${latest.exportVersion}`) {
   throw new Error('Release manifest does not match the current dataset release identity.');
 }
+const citationIdentity = releaseManifest.citationIdentity;
+if (citationIdentity?.schema !== 'humanoiduptime-citation-identity' || citationIdentity.target !== 'dataset' || citationIdentity.version !== latest.exportVersion || citationIdentity.snapshotDate !== latest.snapshotDate || citationIdentity.releaseDate !== latest.releaseDate || citationIdentity.repositoryUrl !== `https://github.com/humanoiduptime/data/tree/v${latest.exportVersion}`) {
+  throw new Error('Release manifest citation identity does not match the current dataset release.');
+}
 if (!await sameBytes(path.join(dataRoot, 'latest-release-manifest.json'), path.join(dataRoot, releaseManifestFile))) {
   throw new Error('latest-release-manifest.json differs from its immutable artifact.');
 }
@@ -161,16 +185,22 @@ for (const [checksum, file] of declaredReleaseChecksums) {
 }
 if (expectedReleaseFiles.size > 0) throw new Error(`Release checksum sidecar is missing: ${[...expectedReleaseFiles].join(', ')}`);
 
+const citationFile = `${releaseBase}-citation.json`;
+const expectedCitation = `${JSON.stringify(datasetCslJson(citationIdentity), null, 2)}\n`;
+if (await readFile(path.join(dataRoot, citationFile), 'utf8') !== expectedCitation || await readFile(path.join(dataRoot, 'latest-citation.json'), 'utf8') !== expectedCitation) {
+  throw new Error('Dataset CSL JSON is not a projection of the release citation identity.');
+}
+
 if (process.env.GITHUB_REF_TYPE === 'tag' && process.env.GITHUB_REF_NAME !== releaseManifest.releaseTag) {
   throw new Error(`Tag ${process.env.GITHUB_REF_NAME} does not match release identity ${releaseManifest.releaseTag}.`);
 }
 
 const citation = await readFile(path.join(repositoryRoot, 'CITATION.cff'), 'utf8');
-if (!citation.includes(`version: ${latest.exportVersion}`) || !citation.includes(`/tree/v${latest.exportVersion}`)) {
+if (!citation.includes(`version: "${latest.exportVersion}"`) || !citation.includes(`/tree/v${latest.exportVersion}`) || !citation.includes(`date-released: ${latest.releaseDate}`)) {
   throw new Error('CITATION.cff does not identify the current immutable release.');
 }
 const releaseNotes = await readFile(path.join(repositoryRoot, 'releases', `v${latest.exportVersion}.md`), 'utf8');
-if (!releaseNotes.includes(`Public Data v${latest.exportVersion}`) || !releaseNotes.includes(`Snapshot: ${latest.snapshotDate}`)) {
+if (!releaseNotes.includes(`Public Data v${latest.exportVersion}`) || !releaseNotes.includes(`Snapshot: ${latest.snapshotDate}`) || !releaseNotes.includes(datasetPlainCitation(citationIdentity))) {
   throw new Error('Release notes do not match the current dataset release.');
 }
 

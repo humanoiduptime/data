@@ -14,6 +14,7 @@ references. It is not a dump of the editorial database.
 - `data/latest-csv-manifest.json` — columns, keys, row counts and checksums;
 - `data/latest-release-manifest.json` — current formal release identity and
   distributions;
+- `data/latest-citation.json` — current CSL JSON dataset citation;
 - `data/data-dictionary.json` — field meanings and explicit exclusions;
 - `data/humanoiduptime-public-data-v*` — immutable dated artifacts.
 
@@ -21,6 +22,10 @@ Formal releases expose one versioned JSON distribution and one deterministic
 CSV ZIP. The ZIP contains all eight CSV tables, their CSV manifest and the data
 dictionary. The release manifest binds both distributions to one release; the
 release checksum file also covers the immutable manifest itself.
+
+The release manifest carries the canonical dataset citation identity. Plain
+text, CSL JSON, `CITATION.cff` and release-note citations are generated from
+that shared identity rather than maintained independently.
 
 Stable IDs, rather than display labels, should be used for joins. CSV files are
 UTF-8 with BOM, use quoted fields and neutralize spreadsheet-formula prefixes.

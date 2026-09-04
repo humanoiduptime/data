@@ -4,6 +4,7 @@
   "updatedAt": "2026-09-04",
   "fields": {
     "exportVersion": "Semantic version of the public export package.",
+    "releaseDate": "UTC date on which this formal public release was published.",
     "snapshotDate": "UTC editorial snapshot date represented by the file.",
     "generatedAt": "Stable UTC release timestamp for this dated snapshot; not an evidence date.",
     "licence": "Reuse terms for the database and original editorial annotations. Third-party source materials are excluded.",
